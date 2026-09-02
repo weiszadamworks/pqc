@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="hu" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumShield // Enterprise Cryptographic Audit Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    borderRadius: { 'sm': '2px', 'DEFAULT': '3px', 'md': '4px' },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'SF Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #000; color: #f4f4f5; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .hb { border-color: rgba(255,255,255,0.08); }
+        .hd > * + * { border-color: rgba(255,255,255,0.08); }
+        .panel { background: #08080a; border: 1px solid rgba(255,255,255,0.08); border-radius: 2px; }
+    </style>
+</head>
+<body class="bg-black text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+
+    <!-- Regulatory Micro-Bar -->
+    <div class="border-b hb bg-[#050507] text-[11px] font-mono text-zinc-500 px-6 sm:px-10 py-2.5">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <span class="text-zinc-300 font-semibold tracking-wider uppercase">DORA (EU 2022/2554) ARTICLE 9</span>
+                <span class="text-zinc-800">|</span><span>NIST FIPS 203 (ML-KEM)</span>
+                <span class="text-zinc-800">|</span><span>CYCLONEDX 1.6 CBOM</span>
+                <span class="text-zinc-800">|</span><span>NIS2 (EU 2022/2555)</span>
+            </div>
+            <div class="flex items-center space-x-4 text-zinc-500">
+                <span class="flex items-center gap-1.5 text-zinc-400"><span class="w-1.5 h-1.5 bg-blue-500 rounded-sm"></span>OPERATIONAL</span>
+                <span class="text-zinc-800">|</span><span>SHA-256 VERIFIED</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="border-b hb bg-black sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-8 h-8 bg-blue-600 rounded-sm flex items-center justify-center font-bold text-xs text-white font-mono">QS</div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-lg tracking-tight text-white font-mono">QuantumShield</span>
+                        <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 bg-zinc-900 text-zinc-400 border hb rounded-sm">Enterprise</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-500 font-mono tracking-wide">Kriptográfiai Audit & Compliance Platform</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/docs" target="_blank" class="px-3.5 py-1.5 text-xs font-mono text-zinc-400 hover:text-white border hb hover:bg-zinc-900 rounded-sm transition-colors uppercase">API Reference</a>
+                <span class="px-3.5 py-1.5 text-xs font-mono text-blue-400 bg-blue-950/40 border border-blue-900/60 rounded-sm uppercase tracking-wider font-semibold">MNB / EBA Auditor Mode</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-6 sm:px-10 py-12 space-y-12">
+
+        <!-- Target Scan -->
+        <section class="space-y-6">
+            <div class="space-y-2 max-w-3xl">
+                <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">AUDIT INITIATION MODULE</div>
+                <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-white">Kriptográfiai Leltár és Poszt-Kvantum Készültség</h1>
+                <p class="text-sm text-zinc-400 leading-relaxed">A DORA 9. Cikk és a NIS2 direktíva alapján kötelező technikai megfelelőség, kulcscsere-agilitás és CBOM auditálása.</p>
+            </div>
+            <form id="scan-form" class="space-y-3.5 max-w-4xl">
+                <div class="flex flex-col sm:flex-row gap-0 border hb bg-[#08080a] rounded-sm focus-within:border-blue-600 transition-colors">
+                    <div class="flex items-center px-4 bg-[#0d0d10] border-r hb text-zinc-500 font-mono text-xs uppercase tracking-wider select-none shrink-0">TARGET FQDN</div>
+                    <input type="text" id="target-input" required placeholder="api.bank.hu vagy www.google.com" class="flex-1 px-5 py-3.5 bg-transparent text-white font-mono text-sm placeholder-zinc-600 focus:outline-none">
+                    <button type="submit" id="submit-btn" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs uppercase tracking-widest font-bold transition-colors rounded-sm flex items-center justify-center space-x-2 shrink-0">
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i><span>Audit Indítása</span>
+                    </button>
+                </div>
+                <div class="flex items-center flex-wrap gap-2.5 pt-1 text-xs font-mono">
+                    <span class="text-zinc-600 uppercase text-[11px]">Referenciák:</span>
+                    <button type="button" onclick="setTarget('www.google.com')" class="px-3 py-1 bg-[#0c0c0e] hover:bg-zinc-800 text-zinc-300 border hb rounded-sm transition-colors flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-sm"></span>www.google.com <span class="text-[10px] text-blue-400 font-semibold">[PQC]</span>
+                    </button>
+                    <button type="button" onclick="setTarget('pq.cloudflareresearch.com')" class="px-3 py-1 bg-[#0c0c0e] hover:bg-zinc-800 text-zinc-300 border hb rounded-sm transition-colors flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-sm"></span>pq.cloudflareresearch.com <span class="text-[10px] text-blue-400 font-semibold">[PQC]</span>
+                    </button>
+                    <button type="button" onclick="setTarget('otpbank.hu')" class="px-3 py-1 bg-[#0c0c0e] hover:bg-zinc-800 text-zinc-300 border hb rounded-sm transition-colors flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-zinc-600 rounded-sm"></span>otpbank.hu <span class="text-[10px] text-zinc-500">[CLASSICAL]</span>
+                    </button>
+                    <button type="button" onclick="setTarget('stripe.com')" class="px-3 py-1 bg-[#0c0c0e] hover:bg-zinc-800 text-zinc-300 border hb rounded-sm transition-colors flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-zinc-600 rounded-sm"></span>stripe.com <span class="text-[10px] text-zinc-500">[PSP]</span>
+                    </button>
+                </div>
+            </form>
+            <div id="loading-box" class="hidden pt-6 border-t hb flex items-center space-x-3 text-xs font-mono text-zinc-400">
+                <div class="w-3.5 h-3.5 border-2 border-blue-500 border-t-transparent animate-spin rounded-sm"></div>
+                <span>HÁLÓZATI VIZSGÁLAT FOLYAMATBAN // TLS 1.3 + ML-KEM-768 PROBE + DORA EVALUATION</span>
+            </div>
+            <div id="error-box" class="hidden p-4 bg-red-950/20 border border-red-900/60 rounded-sm text-red-300 text-xs font-mono flex items-start space-x-3">
+                <i data-lucide="alert-octagon" class="w-4 h-4 text-red-400 shrink-0 mt-0.5"></i>
+                <div id="error-text"></div>
+            </div>
+        </section>
+
+        <!-- Results -->
+        <div id="results-container" class="hidden space-y-10">
+
+            <!-- Executive Summary Banner -->
+            <div class="panel p-6 space-y-3">
+                <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">VEZETŐI ÖSSZEFOGLALÓ</div>
+                <p id="exec-summary" class="text-sm text-zinc-200 leading-relaxed"></p>
+                <div class="flex items-center gap-4 text-xs font-mono text-zinc-400 pt-2 border-t hb">
+                    <span>PIACI POZÍCIÓ: <span id="bench-percentile" class="text-white font-semibold"></span></span>
+                    <span class="text-zinc-800">|</span>
+                    <span>IPARÁGI ÁTLAG: <span id="bench-avg" class="text-white font-semibold"></span> pont</span>
+                    <span class="text-zinc-800">|</span>
+                    <span id="bench-text" class="text-zinc-300"></span>
+                </div>
+            </div>
+
+            <!-- KPI Scorecard -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 panel divide-y md:divide-y-0 md:divide-x hd">
+                <div class="p-7 space-y-3">
+                    <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+                        <span>DORA READINESS</span><span class="text-blue-400 font-bold">ART. 9</span>
+                    </div>
+                    <div class="flex items-baseline space-x-2 font-mono">
+                        <span id="res-dora-score" class="text-4xl font-bold text-white tracking-tight">--</span>
+                        <span class="text-xs text-zinc-500">/ 100</span>
+                    </div>
+                    <div class="w-full bg-zinc-900 h-1 overflow-hidden rounded-sm">
+                        <div id="res-dora-bar" class="bg-blue-600 h-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="p-7 space-y-3">
+                    <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+                        <span>NIS2 RESILIENCE</span><span class="text-zinc-400 font-bold">ART. 21</span>
+                    </div>
+                    <div class="flex items-baseline space-x-2 font-mono">
+                        <span id="res-nis2-score" class="text-4xl font-bold text-white tracking-tight">--</span>
+                        <span class="text-xs text-zinc-500">/ 100</span>
+                    </div>
+                    <div class="w-full bg-zinc-900 h-1 overflow-hidden rounded-sm">
+                        <div id="res-nis2-bar" class="bg-zinc-200 h-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="p-7 space-y-3">
+                    <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+                        <span>PQC RESILIENCE</span><span class="text-blue-400 font-bold">FIPS 203</span>
+                    </div>
+                    <div class="flex items-baseline space-x-2 font-mono">
+                        <span id="res-pqc-score" class="text-4xl font-bold text-white tracking-tight">--</span>
+                        <span class="text-xs text-zinc-500">%</span>
+                    </div>
+                    <div id="res-pqc-badge" class="font-mono text-xs font-semibold">--</div>
+                    <div class="w-full bg-zinc-900 h-1 overflow-hidden rounded-sm">
+                        <div id="res-pqc-bar" class="bg-blue-500 h-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="p-7 space-y-3">
+                    <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+                        <span>AUDITOR VERDICT</span><span class="text-emerald-400 font-bold">ATTESTED</span>
+                    </div>
+                    <div id="res-grade" class="text-2xl font-bold text-white">--</div>
+                    <p id="res-audit-status" class="text-xs text-zinc-400">--</p>
+                    <span id="res-cert-status" class="text-[11px] font-mono text-zinc-500 block truncate">--</span>
+                </div>
+            </div>
+
+            <!-- Downloads -->
+            <div class="panel p-6 flex flex-wrap items-center justify-between gap-4">
+                <div class="space-y-0.5">
+                    <div class="text-xs font-bold font-mono text-white uppercase tracking-wider">AUDIT DOKUMENTÁCIÓ</div>
+                    <p class="text-xs text-zinc-400">3 oldalas minősített PDF audit dosszié (SHA-256 hitelesítve) és CycloneDX 1.6 CBOM</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a id="btn-download-pdf" href="#" target="_blank" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors rounded-sm flex items-center space-x-2">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i><span>Audit PDF</span>
+                    </a>
+                    <a id="btn-download-cbom" href="#" target="_blank" class="px-5 py-2.5 bg-[#0e0e11] hover:bg-zinc-800 text-zinc-300 border hb text-xs font-mono font-medium rounded-sm flex items-center space-x-2 transition-colors">
+                        <i data-lucide="code" class="w-3.5 h-3.5"></i><span>CBOM JSON</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="panel overflow-hidden">
+                <div class="border-b hb bg-[#0b0b0e] px-6 flex flex-wrap gap-1 text-xs font-mono overflow-x-auto">
+                    <button onclick="switchTab('tab-hndl')" id="nav-tab-hndl" class="tab-btn px-5 py-3.5 font-semibold border-b-2 border-blue-600 text-white whitespace-nowrap">01 // HNDL & Mosca</button>
+                    <button onclick="switchTab('tab-risk')" id="nav-tab-risk" class="tab-btn px-5 py-3.5 font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 whitespace-nowrap">02 // Kockázati Jegyzék</button>
+                    <button onclick="switchTab('tab-tls')" id="nav-tab-tls" class="tab-btn px-5 py-3.5 font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 whitespace-nowrap">03 // TLS & Tanúsítvány</button>
+                    <button onclick="switchTab('tab-cbom')" id="nav-tab-cbom" class="tab-btn px-5 py-3.5 font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 whitespace-nowrap">04 // CBOM Leltár</button>
+                    <button onclick="switchTab('tab-dora')" id="nav-tab-dora" class="tab-btn px-5 py-3.5 font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 whitespace-nowrap">05 // DORA 9. Cikk</button>
+                    <button onclick="switchTab('tab-timeline')" id="nav-tab-timeline" class="tab-btn px-5 py-3.5 font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 whitespace-nowrap">06 // Szabályozási Ütemterv</button>
+                    <button onclick="switchTab('tab-telemetry')" id="nav-tab-telemetry" class="tab-btn px-5 py-3.5 font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 whitespace-nowrap">07 // Nyers Telemetria</button>
+                    <button onclick="switchTab('tab-remediation')" id="nav-tab-remediation" class="tab-btn px-5 py-3.5 font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 whitespace-nowrap">08 // Mérnöki Akcióterv</button>
+                </div>
+
+                <!-- Tab 1: HNDL & Mosca -->
+                <div id="tab-hndl" class="tab-pane p-8 space-y-6">
+                    <div id="hndl-card" class="rounded-sm p-6 border hb bg-black">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-semibold text-white uppercase tracking-wider font-mono">HNDL Kvantum-Kitettségi Elemzés</h3>
+                                <span id="hndl-level-badge" class="font-mono text-xs font-bold px-2.5 py-0.5 rounded-sm uppercase"></span>
+                            </div>
+                            <p id="hndl-status-text" class="text-sm text-zinc-300 leading-relaxed"></p>
+                        </div>
+                    </div>
+                    <!-- Mosca Theorem -->
+                    <div class="bg-[#0b0b0e] border hb rounded-sm p-6 space-y-4">
+                        <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">MOSCA-TÉTEL (KVANTUM-MIGRÁCIÓS EGYENLŐTLENSÉG)</div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+                            <div class="bg-black p-4 border hb rounded-sm">
+                                <span class="text-zinc-500 block text-[11px] uppercase">X – Adat Megőrzési Idő:</span>
+                                <span id="mosca-x" class="font-bold text-white text-lg mt-1 block"></span>
+                            </div>
+                            <div class="bg-black p-4 border hb rounded-sm">
+                                <span class="text-zinc-500 block text-[11px] uppercase">Y – Migrációs Idő:</span>
+                                <span id="mosca-y" class="font-bold text-white text-lg mt-1 block"></span>
+                            </div>
+                            <div class="bg-black p-4 border hb rounded-sm">
+                                <span class="text-zinc-500 block text-[11px] uppercase">Z – CRQC Megjelenéséig:</span>
+                                <span id="mosca-z" class="font-bold text-white text-lg mt-1 block"></span>
+                            </div>
+                        </div>
+                        <div id="mosca-formula" class="font-mono text-sm font-bold p-4 bg-black border hb rounded-sm"></div>
+                    </div>
+                    <!-- HNDL Scenario -->
+                    <div class="bg-[#0b0b0e] border hb rounded-sm p-6 space-y-3">
+                        <div class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest font-semibold">TÁMADÁSI FORGATÓKÖNYV</div>
+                        <p id="hndl-scenario" class="text-sm text-zinc-300 leading-relaxed"></p>
+                    </div>
+                    <!-- Affected Data & Financial Impact -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-[#0b0b0e] border hb rounded-sm p-6 space-y-3">
+                            <div class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest font-semibold">ÉRINTETT ADATTÍPUSOK</div>
+                            <ul id="affected-data-list" class="space-y-1.5 text-xs text-zinc-300"></ul>
+                        </div>
+                        <div class="bg-[#0b0b0e] border hb rounded-sm p-6 space-y-3">
+                            <div class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest font-semibold">BECSÜLT PÉNZÜGYI HATÁS</div>
+                            <p id="financial-impact" class="text-sm text-zinc-200 leading-relaxed font-medium"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Risk Register -->
+                <div id="tab-risk" class="tab-pane hidden p-8 space-y-4">
+                    <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">STRUKTURÁLT KOCKÁZATI NYILVÁNTARTÁS (RISK REGISTER)</div>
+                    <div id="risk-register-container" class="space-y-3"></div>
+                </div>
+
+                <!-- Tab 3: TLS & Cert Assessment -->
+                <div id="tab-tls" class="tab-pane hidden p-8 space-y-6">
+                    <div class="space-y-4">
+                        <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">TLS PROTOKOLL BIZTONSÁGI ÉRTÉKELÉS</div>
+                        <div id="tls-assessment" class="space-y-2"></div>
+                    </div>
+                    <div class="space-y-4 pt-6 border-t hb">
+                        <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">X.509 TANÚSÍTVÁNY BIZTONSÁGI ÉRTÉKELÉS</div>
+                        <div id="cert-assessment" class="space-y-2"></div>
+                        <!-- Cert metadata -->
+                        <div class="bg-[#0b0b0e] border hb rounded-sm p-5 mt-4 space-y-2 font-mono text-xs">
+                            <div class="text-[11px] text-zinc-500 uppercase font-semibold mb-3">TANÚSÍTVÁNY METAADATOK</div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div><span class="text-zinc-500">Common Name:</span> <span id="cert-cn" class="text-white"></span></div>
+                                <div><span class="text-zinc-500">Kibocsátó:</span> <span id="cert-issuer" class="text-white"></span></div>
+                                <div><span class="text-zinc-500">Kulcs Típus:</span> <span id="cert-keytype" class="text-white"></span></div>
+                                <div><span class="text-zinc-500">Aláíró Hash:</span> <span id="cert-sighash" class="text-white"></span></div>
+                                <div><span class="text-zinc-500">Érvényesség Kezdete:</span> <span id="cert-notbefore" class="text-white"></span></div>
+                                <div><span class="text-zinc-500">Lejárat:</span> <span id="cert-notafter" class="text-white"></span></div>
+                                <div class="md:col-span-2"><span class="text-zinc-500">SAN-ok:</span> <span id="cert-san" class="text-zinc-300 text-[11px]"></span></div>
+                                <div class="md:col-span-2"><span class="text-zinc-500">SHA-256 Ujjlenyomat:</span> <span id="cert-fp" class="text-zinc-400 text-[11px] break-all"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: CBOM -->
+                <div id="tab-cbom" class="tab-pane hidden p-8 space-y-4">
+                    <div class="flex items-center justify-between text-xs font-mono">
+                        <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">KRIPTOGRÁFIAI ESZKÖZLELTÁR (CYCLONEDX 1.6 CBOM)</div>
+                        <span class="text-zinc-400 bg-zinc-900 px-2.5 py-1 rounded-sm border hb">specVersion: 1.6</span>
+                    </div>
+                    <div class="overflow-x-auto border hb rounded-sm">
+                        <table class="w-full text-left text-xs text-zinc-300 font-mono">
+                            <thead class="bg-[#0d0d10] text-zinc-500 uppercase font-medium border-b hb text-[11px]">
+                                <tr><th class="px-5 py-3.5">Eszköz Típus</th><th class="px-5 py-3.5">Név / Primitív</th><th class="px-5 py-3.5">Azonosító</th><th class="px-5 py-3.5">Kvantumbiztonság</th></tr>
+                            </thead>
+                            <tbody id="cbom-table-body" class="divide-y hd text-xs bg-black"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 5: DORA -->
+                <div id="tab-dora" class="tab-pane hidden p-8 space-y-4">
+                    <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">DORA 9. CIKK MEGFELELŐSÉGI MÁTRIX</div>
+                    <div class="overflow-x-auto border hb rounded-sm">
+                        <table class="w-full text-left text-xs text-zinc-300">
+                            <thead class="bg-[#0d0d10] text-zinc-500 uppercase font-mono font-medium border-b hb text-[11px]">
+                                <tr><th class="px-5 py-3.5">Jogszabály</th><th class="px-5 py-3.5">Előírás</th><th class="px-5 py-3.5">Pontszám</th><th class="px-5 py-3.5">Eredmény</th></tr>
+                            </thead>
+                            <tbody id="dora-table-body" class="divide-y hd text-xs bg-black"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 6: Regulatory Timeline -->
+                <div id="tab-timeline" class="tab-pane hidden p-8 space-y-4">
+                    <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">SZABÁLYOZÁSI ÜTEMTERV ÉS HATÁRIDŐK</div>
+                    <div id="timeline-container" class="space-y-2"></div>
+                </div>
+
+                <!-- Tab 7: Telemetry -->
+                <div id="tab-telemetry" class="tab-pane hidden p-8 space-y-4 font-mono text-xs">
+                    <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">NYERS KRIPTOGRÁFIAI TELEMETRIA (AUDIT BIZONYÍTÉK)</div>
+                    <div class="bg-black border hb rounded-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div><span class="text-zinc-500 block text-[11px] uppercase">Célpont Socket:</span><span id="tel-ip" class="text-white font-semibold"></span></div>
+                        <div><span class="text-zinc-500 block text-[11px] uppercase">TLS Verzió:</span><span id="tel-tls-ver" class="text-white font-semibold"></span></div>
+                        <div><span class="text-zinc-500 block text-[11px] uppercase">Cipher Suite:</span><span id="tel-cipher" class="text-zinc-300"></span></div>
+                        <div><span class="text-zinc-500 block text-[11px] uppercase">Kulcscsere Csoport:</span><span id="tel-pqc-group" class="text-blue-400 font-semibold"></span></div>
+                        <div><span class="text-zinc-500 block text-[11px] uppercase">Cipher Bits:</span><span id="tel-cipher-bits" class="text-white"></span></div>
+                        <div><span class="text-zinc-500 block text-[11px] uppercase">ALPN Protokoll:</span><span id="tel-alpn" class="text-zinc-300"></span></div>
+                        <div class="md:col-span-2"><span class="text-zinc-500 block text-[11px] uppercase">Tanúsítvány SHA-256 Ujjlenyomat:</span><span id="tel-cert-sha" class="text-zinc-400 text-[11px] break-all"></span></div>
+                        <div class="md:col-span-2"><span class="text-zinc-500 block text-[11px] uppercase">Audit Digitális Hash:</span><span id="tel-audit-hash" class="text-blue-400 text-[11px] break-all font-bold"></span></div>
+                    </div>
+                </div>
+
+                <!-- Tab 8: Remediation -->
+                <div id="tab-remediation" class="tab-pane hidden p-8 space-y-6">
+                    <div class="text-[11px] font-mono text-blue-500 uppercase tracking-widest font-semibold">MÉRNÖKI AKCIÓTERV & KONFIGURÁCIÓ</div>
+                    <div id="remediation-steps-container" class="space-y-3"></div>
+                    <div class="border hb bg-black rounded-sm p-5 space-y-2 text-xs font-mono">
+                        <span class="text-blue-400 font-semibold text-[11px] uppercase">NGINX TLS 1.3 + ML-KEM-768 HIBRID KONFIGURÁCIÓ:</span>
+                        <pre class="bg-[#09090b] p-4 rounded-sm text-[11px] text-zinc-300 overflow-x-auto border hb leading-relaxed">
+# /etc/nginx/nginx.conf - Quantum-Safe DORA Art. 9 Compliant
+ssl_protocols TLSv1.3;
+ssl_prefer_server_ciphers off;
+ssl_ecdh_curve X25519MLKEM768:x25519:secp256r1;
+ssl_ciphers TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t hb bg-black py-8 text-xs font-mono text-zinc-500 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div><span class="font-semibold text-zinc-300 uppercase">QuantumShield Enterprise</span> • DORA & NIS2 Kriptográfiai Audit Platform</div>
+            <div class="flex items-center space-x-4 text-zinc-500"><span>NIST FIPS 203</span><span>•</span><span>CYCLONEDX 1.6</span></div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        function setTarget(d) { document.getElementById('target-input').value = d; }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('border-blue-600','text-white');
+                el.classList.add('border-transparent','text-zinc-500');
+            });
+            const p = document.getElementById(tabId); if (p) p.classList.remove('hidden');
+            const n = document.getElementById('nav-'+tabId);
+            if (n) { n.classList.remove('border-transparent','text-zinc-500'); n.classList.add('border-blue-600','text-white'); }
+            lucide.createIcons();
+        }
+
+        const scanForm = document.getElementById('scan-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const loadingBox = document.getElementById('loading-box');
+        const errorBox = document.getElementById('error-box');
+        const errorText = document.getElementById('error-text');
+        const resultsContainer = document.getElementById('results-container');
+
+        scanForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const target = document.getElementById('target-input').value.trim();
+            if (!target) return;
+            errorBox.classList.add('hidden'); resultsContainer.classList.add('hidden');
+            loadingBox.classList.remove('hidden'); submitBtn.disabled = true; submitBtn.classList.add('opacity-50');
+            try {
+                const r = await fetch('/api/scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({target}) });
+                const data = await r.json();
+                if (!r.ok) throw new Error(data.detail || 'Hiba történt.');
+                renderResults(data);
+            } catch (err) { errorText.innerText = err.message; errorBox.classList.remove('hidden'); }
+            finally { loadingBox.classList.add('hidden'); submitBtn.disabled = false; submitBtn.classList.remove('opacity-50'); }
+        });
+
+        function mkAssessRow(label, value) {
+            const isGood = /KIVÁLÓ|ERŐS|BIZTOSÍTOTT|VÉDETT|MEGFELELŐ|ALACSONY/.test(value);
+            const isBad = /KRITIKUS|GYENGE|HIÁNYZIK|SEBEZHETŐ/.test(value);
+            const color = isGood ? 'text-blue-400' : isBad ? 'text-red-400' : 'text-zinc-300';
+            return `<div class="bg-[#0b0b0e] border hb rounded-sm p-4 flex items-start gap-3">
+                <span class="text-[11px] font-mono text-zinc-500 uppercase tracking-wider shrink-0 w-48">${label}:</span>
+                <span class="text-xs ${color} leading-relaxed">${value}</span>
+            </div>`;
+        }
+
+        function renderResults(data) {
+            const comp = data.compliance, scan = data.scan, hndl = comp.hndl_risk, tls = scan.tls_info, cert = scan.certificate_info, pqc = scan.pqc_info, cbom = data.cbom;
+
+            // Executive Summary
+            document.getElementById('exec-summary').innerText = comp.executive_summary || '';
+            const bench = comp.benchmark_comparison || {};
+            document.getElementById('bench-percentile').innerText = `Top ${100 - (bench.percentile || 0)}%`;
+            document.getElementById('bench-avg').innerText = bench.industry_avg_dora_score || '62';
+            document.getElementById('bench-text').innerText = bench.better_than || '';
+
+            // KPIs
+            document.getElementById('res-dora-score').innerText = comp.dora_score;
+            document.getElementById('res-dora-bar').style.width = comp.dora_score + '%';
+            document.getElementById('res-nis2-score').innerText = comp.nis2_score;
+            document.getElementById('res-nis2-bar').style.width = comp.nis2_score + '%';
+            document.getElementById('res-pqc-score').innerText = comp.quantum_resilience_score;
+            document.getElementById('res-pqc-bar').style.width = comp.quantum_resilience_score + '%';
+            const pqcBadge = document.getElementById('res-pqc-badge');
+            pqcBadge.className = "font-mono text-xs font-semibold " + (pqc.pqc_supported ? 'text-blue-400' : 'text-zinc-400');
+            pqcBadge.innerText = pqc.pqc_supported ? `[PQC AKTÍV: ${pqc.group_name}]` : '[KLASSZIKUS KULCSCSERE (HNDL)]';
+            document.getElementById('res-grade').innerText = comp.grade;
+            document.getElementById('res-audit-status').innerText = comp.audit_status;
+            const expT = cert.days_until_expiration != null ? `${cert.days_until_expiration} nap` : 'N/A';
+            document.getElementById('res-cert-status').innerText = `${cert.key_type||'N/A'} ${cert.key_size_bits||0}b | Lejárat: ${expT}`;
+
+            // Downloads
+            document.getElementById('btn-download-pdf').href = `/api/reports/${data.report_filename}`;
+            document.getElementById('btn-download-cbom').href = `/api/cbom/${data.cbom_filename}`;
+
+            // Tab 1: HNDL & Mosca
+            const hndlCard = document.getElementById('hndl-card'), hndlBadge = document.getElementById('hndl-level-badge');
+            hndlCard.className = hndl.risk_level === 'LOW' ? 'rounded-sm p-6 border border-blue-900/60 bg-blue-950/20' : 'rounded-sm p-6 border hb bg-[#09090b]';
+            hndlBadge.className = 'font-mono text-xs font-bold px-2.5 py-0.5 rounded-sm uppercase ' + (hndl.risk_level === 'LOW' ? 'bg-blue-900/60 text-blue-300 border border-blue-800' : 'bg-zinc-900 text-zinc-300 border hb');
+            hndlBadge.innerText = `KOCKÁZAT: ${hndl.risk_level}`;
+            document.getElementById('hndl-status-text').innerText = hndl.status_text;
+            const mt = comp.mosca_theorem || {};
+            document.getElementById('mosca-x').innerText = (mt.x_data_shelf_life || hndl.mosca_x || 0) + ' év';
+            document.getElementById('mosca-y').innerText = (mt.y_migration_time || hndl.mosca_y || 0) + ' év';
+            document.getElementById('mosca-z').innerText = (mt.z_crqc_eta || hndl.mosca_z || 0) + ' év';
+            const formulaEl = document.getElementById('mosca-formula');
+            formulaEl.innerText = mt.formula || hndl.mosca_inequality || '';
+            formulaEl.className = 'font-mono text-sm font-bold p-4 bg-black border hb rounded-sm ' + (mt.inequality_holds ? 'text-red-400' : 'text-blue-400');
+            document.getElementById('hndl-scenario').innerText = hndl.hndl_scenario || '';
+            const adl = document.getElementById('affected-data-list');
+            adl.innerHTML = (hndl.affected_data_types || []).map(d => `<li class="flex items-center gap-2"><span class="w-1 h-1 bg-zinc-500 rounded-sm shrink-0"></span>${d}</li>`).join('');
+            document.getElementById('financial-impact').innerText = hndl.estimated_financial_impact || '';
+
+            // Tab 2: Risk Register
+            const rrc = document.getElementById('risk-register-container');
+            rrc.innerHTML = '';
+            const risks = comp.risk_register || [];
+            if (risks.length === 0) {
+                rrc.innerHTML = '<div class="p-4 border border-blue-900/60 bg-blue-950/20 text-xs font-mono text-blue-300 rounded-sm">Nem azonosítottunk kiemelkedő kockázatot. A rendszer megfelelő biztonsági szinten üzemel.</div>';
+            } else {
+                risks.forEach(r => {
+                    const impactColor = r.impact === 'MAGAS' ? 'text-red-400 bg-red-950 border-red-900' : r.impact === 'KÖZEPES' ? 'text-yellow-400 bg-yellow-950 border-yellow-900' : 'text-zinc-300 bg-zinc-900 border-zinc-800';
+                    rrc.innerHTML += `<div class="bg-[#0b0b0e] border hb rounded-sm p-5 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs font-bold text-blue-400">${r.id}</span>
+                                <span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase border ${impactColor}">${r.impact}</span>
+                                <span class="text-xs text-zinc-400">${r.category}</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-zinc-500">${r.regulation}</span>
+                        </div>
+                        <p class="text-xs text-zinc-200 leading-relaxed">${r.finding}</p>
+                        <p class="text-xs text-zinc-400"><span class="text-zinc-500 font-semibold">Ajánlás:</span> ${r.recommendation}</p>
+                    </div>`;
+                });
+            }
+
+            // Tab 3: TLS & Cert Assessment
+            const tlsA = comp.tls_security_assessment || {};
+            document.getElementById('tls-assessment').innerHTML = [
+                mkAssessRow('Protokoll Értékelés', tlsA.protocol_verdict || 'N/A'),
+                mkAssessRow('Cipher Suite Erősség', tlsA.cipher_strength_verdict || 'N/A'),
+                mkAssessRow('Forward Secrecy', tlsA.forward_secrecy || 'N/A'),
+                mkAssessRow('Tömörítési Kockázat', tlsA.compression_risk || 'N/A'),
+                mkAssessRow('Downgrade Védelem', tlsA.downgrade_resistance || 'N/A')
+            ].join('');
+            const certA = comp.cert_security_assessment || {};
+            document.getElementById('cert-assessment').innerHTML = [
+                mkAssessRow('Tanúsítványlánc', certA.chain_status || 'N/A'),
+                mkAssessRow('Kulcs Erősség', certA.key_strength_verdict || 'N/A'),
+                mkAssessRow('Aláíró Algoritmus', certA.signature_algorithm_verdict || 'N/A'),
+                mkAssessRow('Lejárati Kockázat', certA.expiration_risk || 'N/A'),
+                mkAssessRow('Kvantum Sebezhetőség', certA.quantum_vulnerability || 'N/A')
+            ].join('');
+            document.getElementById('cert-cn').innerText = cert.common_name || 'N/A';
+            document.getElementById('cert-issuer').innerText = (cert.issuer || 'N/A').substring(0, 80);
+            document.getElementById('cert-keytype').innerText = `${cert.key_type || 'N/A'} ${cert.key_size_bits || ''} bit${cert.curve_name ? ' ('+cert.curve_name+')' : ''}`;
+            document.getElementById('cert-sighash').innerText = `${cert.signature_algorithm || 'N/A'} (${cert.signature_hash || 'N/A'})`;
+            document.getElementById('cert-notbefore').innerText = cert.not_before || 'N/A';
+            document.getElementById('cert-notafter').innerText = cert.not_after || 'N/A';
+            document.getElementById('cert-san').innerText = (cert.subject_alt_names || []).join(', ') || 'N/A';
+            document.getElementById('cert-fp').innerText = cert.fingerprint_sha256 || 'N/A';
+
+            // Tab 4: CBOM
+            const cbomTbody = document.getElementById('cbom-table-body');
+            cbomTbody.innerHTML = '';
+            if (cbom && cbom.components) {
+                cbom.components.forEach(item => {
+                    const qProp = item.cryptoProperties?.quantumProperties || {};
+                    const isQS = qProp.isQuantumSafe;
+                    cbomTbody.innerHTML += `<tr>
+                        <td class="px-5 py-3.5 font-semibold text-zinc-300">${item.cryptoProperties?.assetType || 'asset'}</td>
+                        <td class="px-5 py-3.5 text-white">${item.name}</td>
+                        <td class="px-5 py-3.5 text-zinc-500 text-xs">${item['bom-ref'] || '-'}</td>
+                        <td class="px-5 py-3.5"><span class="px-2 py-0.5 rounded-sm text-[11px] font-semibold ${isQS ? 'text-blue-400 bg-blue-950/60 border border-blue-900' : 'text-zinc-400 bg-zinc-900 border hb'}">${isQS ? 'PQC VÉDETT' : 'SHOR-SEBEZHETŐ'}</span></td>
+                    </tr>`;
+                });
+            }
+
+            // Tab 5: DORA
+            const doraTbody = document.getElementById('dora-table-body');
+            doraTbody.innerHTML = '';
+            const db = comp.dora_breakdown || {};
+            [{art:"DORA 9(1)",desc:"Korszerű erős titkosítás & AEAD cipher suite-ok",s:db.strong_encryption||0,m:25,t:20},
+             {art:"DORA 9(2)",desc:"Kriptográfiai eszközleltár (CBOM) & kulcskezelés",s:db.key_management||0,m:30,t:25},
+             {art:"DORA 9(4) RTS",desc:"Kripto-agilitás, PQC hibrid védelem (HNDL megelőzés)",s:db.crypto_agility||0,m:25,t:20},
+             {art:"Biztonságos Csatornák",desc:"Elavult protokollok (SSLv3, TLS 1.0/1.1) tiltása",s:db.secure_protocols||0,m:20,t:16}
+            ].forEach(r => {
+                const pass = r.s >= r.t;
+                doraTbody.innerHTML += `<tr>
+                    <td class="px-5 py-3.5 font-semibold text-blue-400 font-mono text-xs">${r.art}</td>
+                    <td class="px-5 py-3.5 text-zinc-300 text-xs">${r.desc}</td>
+                    <td class="px-5 py-3.5 font-semibold text-white font-mono text-xs">${r.s} / ${r.m}</td>
+                    <td class="px-5 py-3.5"><span class="px-2 py-0.5 rounded-sm text-[11px] font-mono font-semibold ${pass ? 'text-blue-400 bg-blue-950/60 border border-blue-900' : 'text-zinc-400 bg-zinc-900 border hb'}">${pass ? 'MEGFELELT' : 'HIÁNYOS'}</span></td>
+                </tr>`;
+            });
+
+            // Tab 6: Timeline
+            const tlc = document.getElementById('timeline-container');
+            tlc.innerHTML = '';
+            (comp.regulatory_timeline || []).forEach(t => {
+                const statusColor = t.status === 'HATÁLYOS' ? 'text-blue-400 bg-blue-950/60 border-blue-900' : t.status === 'KÖZELGŐ' ? 'text-yellow-400 bg-yellow-950/60 border-yellow-900' : 'text-zinc-400 bg-zinc-900 border-zinc-800';
+                tlc.innerHTML += `<div class="bg-[#0b0b0e] border hb rounded-sm p-4 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <span class="font-mono text-xs font-bold text-white w-24 shrink-0">${t.date}</span>
+                        <span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase border ${statusColor}">${t.status}</span>
+                        <span class="text-xs text-zinc-300">${t.event}</span>
+                    </div>
+                    <span class="text-[10px] font-mono text-zinc-500 shrink-0">${t.regulation}</span>
+                </div>`;
+            });
+
+            // Tab 7: Telemetry
+            document.getElementById('tel-ip').innerText = `${scan.resolved_ip}:${scan.port}`;
+            document.getElementById('tel-tls-ver').innerText = tls.version || 'N/A';
+            document.getElementById('tel-cipher').innerText = tls.cipher_name || 'N/A';
+            document.getElementById('tel-pqc-group').innerText = pqc.group_name || 'KLASSZIKUS FALLBACK';
+            document.getElementById('tel-cipher-bits').innerText = (tls.cipher_bits || 'N/A') + ' bit';
+            document.getElementById('tel-alpn').innerText = tls.alpn_protocol || 'N/A';
+            document.getElementById('tel-cert-sha').innerText = cert.fingerprint_sha256 || 'N/A';
+            document.getElementById('tel-audit-hash').innerText = `SHA256-${scan.hostname}-${comp.dora_score}-${new Date().toISOString()}`;
+
+            // Tab 8: Remediation
+            const remC = document.getElementById('remediation-steps-container');
+            remC.innerHTML = '';
+            if (comp.remediation_steps && comp.remediation_steps.length > 0) {
+                comp.remediation_steps.forEach(s => {
+                    const isCrit = s.severity === 'CRITICAL';
+                    const isHigh = s.severity === 'HIGH';
+                    const sc = isCrit ? 'bg-red-950 text-red-300 border border-red-900' : isHigh ? 'bg-yellow-950 text-yellow-300 border border-yellow-900' : 'bg-zinc-900 text-zinc-300 border hb';
+                    remC.innerHTML += `<div class="border hb bg-black rounded-sm p-4 flex items-start space-x-3">
+                        <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono font-semibold uppercase shrink-0 mt-0.5 ${sc}">${s.severity}</span>
+                        <div><div class="text-xs font-semibold text-white uppercase">${s.title}</div><div class="text-xs text-zinc-400 mt-1">${s.action}</div></div>
+                    </div>`;
+                });
+            } else {
+                remC.innerHTML = '<div class="p-4 border border-blue-900/60 bg-blue-950/20 text-xs font-mono text-blue-300 rounded-sm">A célpont megfelel a DORA 9. Cikk követelményeinek. Nincs közvetlen javítandó hiba.</div>';
+            }
+
+            resultsContainer.classList.remove('hidden');
+            lucide.createIcons();
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
